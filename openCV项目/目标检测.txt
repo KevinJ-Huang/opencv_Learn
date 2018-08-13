@@ -1,0 +1,94 @@
+#include "stdafx.h"
+#include <iostream>
+#include <vector>
+#include <stdint.h>
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/features2d/features2d.hpp"
+using namespace cv;
+using namespace std;
+
+
+
+
+
+int main()
+{
+	Mat edges;  //定义转化的灰度图
+	Mat frame = cv::imread("C://Users/NWPU-USTC/Pictures/各种3.jpg", 1);
+	cv::Mat  hsv;
+	std::vector<cv::Mat> hsv_vec;
+	vector<int> x_val, y_val;
+	double center[2];
+	Rect g_rectangle;
+
+	x_val.clear(); y_val.clear();
+
+	Mat imgHSV;
+	cvtColor(frame, imgHSV, COLOR_BGR2HSV);
+
+	Mat imgThresholded;
+	Mat dstimage;
+
+	inRange(imgHSV, cv::Scalar(45, 38, 63), cv::Scalar(135, 255, 255), imgThresholded);
+
+	Mat element = getStructuringElement(MORPH_RECT, Size(5, 5));
+	morphologyEx(imgThresholded, imgThresholded, MORPH_OPEN, element);
+
+	morphologyEx(imgThresholded, imgThresholded, MORPH_CLOSE, element);
+
+
+	Mat element2 = getStructuringElement(MORPH_RECT, Size(15, 15));
+
+	erode(imgThresholded, dstimage, element2);
+
+	medianBlur(dstimage, imgThresholded, 3);
+	imshow("median", imgThresholded);
+	waitKey(0);
+
+
+	std::vector<std::vector<cv::Point> > region_contours;
+	cv::findContours(imgThresholded.clone(), region_contours,
+		CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+	for (size_t n = 0; n != region_contours.size(); ++n)
+	{
+		// 去除高度宽度不符合条件区域
+		cv::Rect rect = cv::boundingRect(region_contours[n]);
+		rect.height = 1.45*rect.height+20 ;
+		rect.width = 1.45*rect.width+20;
+		rect.x = rect.x - 0.2*rect.x;
+		rect.y = rect.y - 0.2*rect.y;
+		Mat result = frame(rect);
+		cv::imshow("rect", frame(rect));
+		cv::waitKey(0);
+
+
+
+		cvtColor(frame(rect), edges, CV_BGR2GRAY);
+
+
+		vector<Vec3f> circles;
+		//霍夫圆
+		HoughCircles(edges, circles, CV_HOUGH_GRADIENT, 1.5, 10, 200, 100, 0, 0);
+		for (size_t i = 0; i < circles.size(); i++)
+		{
+			Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+			int radius = cvRound(circles[i][2]);
+			//绘制圆心  
+			circle(frame(rect), center, 3, Scalar(0, 255, 0), -1, 8, 0);
+			//绘制圆轮廓  
+			circle(frame(rect), center, radius, Scalar(155, 50, 255), 3, 8, 0);
+			cout << "圆心坐标x= " << cvRound(circles[i][0])+rect.x << endl << "圆心坐标y= " 
+				<< cvRound(circles[i][1])+rect.y << endl;
+		}
+		imshow("【效果图】", frame);
+		if (circles.size()>0) cout << "Yes" << endl;
+		else cout << "No" << endl;
+	}
+	
+    waitKey(0);
+	return 0;
+}
+
+
