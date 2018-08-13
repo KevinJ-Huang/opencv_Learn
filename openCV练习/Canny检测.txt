@@ -1,0 +1,24 @@
+#include "stdafx.h"
+#include "opencv2/core/core.hpp"  
+#include "opencv2/highgui/highgui.hpp"  
+#include "opencv2/imgproc/imgproc.hpp"  
+using namespace cv;
+
+int main()
+{
+	Mat src = imread("C://Users/NWPU-USTC/Pictures/61db9925bc315c6097ad2e3f85b1cb13485477cf.jpg");
+	Mat src1 = src.clone();
+	imshow("原图", src);
+	Canny(src, src, 150, 100, 3);
+	imshow("效果图", src);
+	Mat dst, edge, gray;
+	dst.create(src1.size(), src1.type());
+	cvtColor(src1, gray, COLOR_BGR2GRAY);
+	blur(gray, edge, Size(3, 3));
+	Canny(edge, edge, 3, 9, 3);
+	dst = Scalar::all(0);
+	src1.copyTo(dst, edge);
+	imshow("效果图2", dst);
+	waitKey(0);
+	return 0;
+}

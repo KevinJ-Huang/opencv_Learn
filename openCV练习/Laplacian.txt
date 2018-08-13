@@ -1,0 +1,19 @@
+#include "stdafx.h"
+#include "opencv2/core/core.hpp"  
+#include "opencv2/highgui/highgui.hpp"  
+#include "opencv2/imgproc/imgproc.hpp"  
+using namespace cv;
+
+int main()
+{
+	Mat src_gray, dst,abs_dst;
+	Mat src = imread("C://Users/NWPU-USTC/Pictures/61db9925bc315c6097ad2e3f85b1cb13485477cf.jpg");
+	imshow("ԭͼ", src);
+	GaussianBlur(src, src, Size(3, 3), 0, 0, BORDER_DEFAULT);
+	cvtColor(src, src_gray,COLOR_RGB2GRAY);
+	Laplacian(src_gray, dst, CV_16S, 3, 1, 0, BORDER_DEFAULT);
+	convertScaleAbs(dst, abs_dst);
+	imshow("Ч��ͼ", abs_dst);
+	waitKey(0);
+	return 0;
+}

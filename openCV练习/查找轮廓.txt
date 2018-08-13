@@ -1,0 +1,33 @@
+#include "stdafx.h"
+#include <iostream>  
+#include <fstream>  
+#include "opencv2/core/core.hpp"  
+#include "opencv2/highgui/highgui.hpp"  
+#include "opencv2/imgproc/imgproc.hpp"
+using namespace cv;
+using namespace std;
+
+int main(int argc,char** argv)
+{
+	
+	Mat src, dst;
+	src = imread("C://Users/NWPU-USTC/Pictures/61db9925bc315c6097ad2e3f85b1cb13485477cf.jpg", 0);
+	imshow("原始图", src);
+	dst = Mat::zeros(src.rows, src.cols, CV_8UC3);
+	src = src > 119;
+	imshow("效果图", src);
+	vector<vector<Point>>contours;
+	vector<Vec4i>hierarchy;
+	findContours(src, contours, hierarchy, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
+	int index = 0;
+	for (; index >= 0; index = hierarchy[index][0])
+	{
+		Scalar color(rand() & 255, rand() & 255, rand() & 255);
+		drawContours(dst, contours, index, color, FILLED, 8, hierarchy);
+	}
+	
+	imshow("效果图1", dst);
+	waitKey(0);
+	return 0;
+
+}

@@ -1,0 +1,38 @@
+#include "stdafx.h"
+#include <iostream>  
+#include <fstream>  
+#include "opencv2/core/core.hpp"  
+#include "opencv2/highgui/highgui.hpp"  
+#include "opencv2/imgproc/imgproc.hpp"
+using namespace cv;
+using namespace std;
+
+int main()
+{
+	system("color 1A");
+	Point2f srcTriangle[3];
+	Point2f dstTriangle[3];
+	Mat rotMat(2, 3, CV_32FC1);
+	Mat warpMat(2, 3, CV_32FC1);
+	Mat src, dst, dstwarp;
+	src = imread("C://Users/NWPU-USTC/Pictures/61db9925bc315c6097ad2e3f85b1cb13485477cf.jpg", 1);
+	srcTriangle[0] = Point2f(0, 0);
+	srcTriangle[1] = Point2f(static_cast<float>(src.cols - 1), 1);
+	srcTriangle[2] = Point2f(0,static_cast<float>(src.cols - 1));
+	dstTriangle[0] = Point2f(static_cast<float>(src.cols*0.0), static_cast<float>(src.rows*0.33));
+	dstTriangle[1] = Point2f(static_cast<float>(src.cols*0.65), static_cast<float>(src.rows*0.35));
+	dstTriangle[2] = Point2f(static_cast<float>(src.cols*0.15), static_cast<float>(src.rows*0.6));
+	warpMat = getAffineTransform(srcTriangle, dstTriangle);
+	warpAffine(src, dst, warpMat, dst.size());
+	Point center = Point(dst.cols / 2, dst.rows / 2);
+	double angle = -30.0;
+	double scale = 0.8;
+	rotMat = getRotationMatrix2D(center, angle, scale);
+	warpAffine(dst, dstwarp, rotMat, dst.size());
+	imshow("原图", src);
+	imshow("效果图", dst);
+	imshow("效果图1", dstwarp);
+	waitKey(0);
+	return 0;
+
+}

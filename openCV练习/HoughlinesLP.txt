@@ -1,0 +1,27 @@
+#include "stdafx.h"
+#include "opencv2/core/core.hpp"  
+#include "opencv2/highgui/highgui.hpp"  
+#include "opencv2/imgproc/imgproc.hpp"  
+using namespace cv;
+using namespace std;
+
+int main()
+{
+	Mat mid, dst;
+	Mat src = imread("C://Users/NWPU-USTC/Pictures/61db9925bc315c6097ad2e3f85b1cb13485477cf.jpg");
+	imshow("原图", src);
+	Canny(src, mid, 50, 200, 3);
+	cvtColor(mid, dst, CV_GRAY2BGR);
+	vector<Vec4i>lines;
+	HoughLinesP(mid, lines, 1, CV_PI / 180, 80, 50, 10);
+	for (size_t i = 0; i < lines.size(); i++)
+	{
+		Vec4i l = lines[i];
+		line(dst, Point(l[0],l[1]),Point(l[2],l[3]), Scalar(186,88,255), 1, LINE_AA);
+		
+	}
+	imshow("效果图", mid);
+	imshow("效果图1", dst);
+	waitKey(0);
+	return 0;
+}

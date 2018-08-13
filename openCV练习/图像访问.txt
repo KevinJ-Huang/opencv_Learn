@@ -1,0 +1,42 @@
+#include <iostream>
+#include "stdafx.h"
+#include <opencv2/opencv.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#define WINDOW_WIDTH 600
+using namespace cv;
+using namespace std;
+
+void colorReduce(Mat& inputImage, Mat& outputImage, int div);
+
+int main()
+{
+	Mat scrImage = imread("C://Users/NWPU-USTC/Pictures/61db9925bc315c6097ad2e3f85b1cb13485477cf.jpg");
+	imshow("原始图像", scrImage);
+	Mat dstImage;
+	dstImage.create(scrImage.rows, scrImage.cols, scrImage.type());
+	double time0 = static_cast<double>(getTickCount());
+	colorReduce(scrImage, dstImage, 32);
+	time0 = ((double)getTickCount() - time0) / getTickFrequency();
+	cout << "时间" << time0 << "秒" << endl;
+	imshow("效果图", dstImage);
+	waitKey(0);
+}
+
+void colorReduce(Mat& inputImage, Mat& outputImage, int div)
+{
+	outputImage = inputImage.clone();
+	int rowNumber = outputImage.rows;
+	int colNumber = outputImage.cols;
+	for (int i = 0; i < rowNumber; i++)
+	{
+		uchar* data = outputImage.ptr<uchar>(i);
+		for (int j = 0; j < colNumber;j++)
+		{
+			outputImage.at<Vec3b>(i, j)[0] = outputImage.at<Vec3b>(i, j)[0] / div*div + div / 2;
+			outputImage.at<Vec3b>(i, j)[1] = outputImage.at<Vec3b>(i, j)[1] / div*div + div / 2;
+			outputImage.at<Vec3b>(i, j)[2] = outputImage.at<Vec3b>(i, j)[2] / div*div + div / 2;
+		}
+	}
+}
+

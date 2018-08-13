@@ -1,0 +1,32 @@
+#include "stdafx.h"
+#include <iostream>  
+#include <fstream>  
+#include "opencv2/core/core.hpp"  
+#include "opencv2/highgui/highgui.hpp"  
+#include "opencv2/imgproc/imgproc.hpp"
+using namespace cv;
+using namespace std;
+
+int main()
+{
+	Mat src, dst;
+	Mat map_x, map_y;
+	src = imread("C://Users/NWPU-USTC/Pictures/61db9925bc315c6097ad2e3f85b1cb13485477cf.jpg", 1);
+	imshow("原始图", src);
+	dst.create(src.size(), src.type());
+	map_x.create(src.size(), CV_32FC1);
+	map_y.create(src.size(), CV_32FC1);
+	for (int j = 0; j < src.rows; j++)
+	{
+		for (int i = 0; i < src.cols; i++)
+		{
+			map_x.at<float>(j, i) = static_cast<float>(i);
+			map_y.at<float>(j, i) = static_cast<float>(src.rows - j);
+		}
+	}
+	remap(src, dst, map_x, map_y, INTER_LINEAR, BORDER_CONSTANT, Scalar(0, 0, 0));
+	imshow("效果图", dst);
+	waitKey();
+	return 0;
+
+}
